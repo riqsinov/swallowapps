@@ -6,7 +6,8 @@ import 'package:swallow_monitoring/loginpage.dart';
 import 'package:swallow_monitoring/monitorpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:swallow_monitoring/db.dart';
+import 'package:swallow_monitoring/db/db.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -20,6 +21,7 @@ class _HomePage extends State<HomePage> {
 
   User? user = FirebaseAuth.instance.currentUser;
   db logedinuser = db();
+  bool value = false;
 
   int _selectedNavbar = 0;
 
@@ -31,9 +33,16 @@ class _HomePage extends State<HomePage> {
     HistoryPage(),
   ];
 
-  void onItemTapped(int index) {
+  final dbRef = FirebaseDatabase.instance.reference();
+
+  _onTap() { // this has changed
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (BuildContext context) => _pageOptions[_selectedNavbar]));
+  }
+
+  onUpdate() {
     setState(() {
-      _selectedNavbar = index;
+      value = !value;
     });
   }
 
@@ -68,56 +77,55 @@ class _HomePage extends State<HomePage> {
     );
 
     return Scaffold(
-      // body:
-      // _pageOptions[_selectedNavbar],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex : _selectedNavbar,
         type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedNavbar,
         backgroundColor: Colors.green,
-        selectedItemColor: Colors.white,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: ImageIcon(
-              AssetImage("assets/Home.png"),
-              color: Colors.white,
-            ),
+              icon: ImageIcon(
+                AssetImage("assets/Home.png"),
+                color: Colors.white,
+              ),
               label: "Home"
           ),
           BottomNavigationBarItem(
-            icon: ImageIcon(
-              AssetImage("assets/arduino.png"),
-              color: Colors.white,
-            ),
+              icon: ImageIcon(
+                AssetImage("assets/arduino.png"),
+                color: Colors.white,
+              ),
               label: "Device"
           ),
           BottomNavigationBarItem(
-            icon: ImageIcon(
-              AssetImage("assets/Add.png"),
-              color: Colors.white,
-            ),
+              icon: ImageIcon(
+                AssetImage("assets/Add.png"),
+                color: Colors.white,
+              ),
               label: "Add"
           ),
           BottomNavigationBarItem(
-            icon: ImageIcon(
-              AssetImage("assets/temperature.png"),
-              color: Colors.white,
-            ),
+              icon: ImageIcon(
+                AssetImage("assets/temperature.png"),
+                color: Colors.white,
+              ),
               label: "Monitor"
           ),
-        BottomNavigationBarItem(
-          icon: ImageIcon(
-            AssetImage("assets/History.png"),
-            color: Colors.white,
+          BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage("assets/History.png"),
+                color: Colors.white,
+              ),
+              label: "History"
           ),
-          label: "History"
-        ),
         ],
-        onTap: (index) {
+        unselectedItemColor: Colors.white,
+        selectedItemColor: Colors.white,
+        onTap: (index) { // this has changed
           setState(() {
             _selectedNavbar = index;
           });
+          _onTap();
         },
-        unselectedItemColor: Colors.green,
       ),
 
       body:
@@ -144,7 +152,31 @@ class _HomePage extends State<HomePage> {
                 Text("Hello, ${logedinuser.firstName}", style: TextStyle(fontSize: 36, color: Colors.white)),
               ],
             ),),
+
+          Positioned(bottom: 50, top: 280, left: 20, right: 20,
+            child: GridView(children: [
+              Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.green),
+                child: Column(
+                  children: [
+                    IconButton(
+                      icon: Image.asset('assets/power.png',color:
+                      !value ? Colors.red : Colors.white,),
+                      iconSize: 30,
+                      onPressed: () {
+                        onUpdate();
+                        writeData();
+                      },
+                    ),
+                  ],
+                ),),
+
+
+
+            ],
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: 10, crossAxisSpacing: 15),),),
         ],),
+
+
     ),
     );
   }
@@ -154,4 +186,8 @@ class _HomePage extends State<HomePage> {
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => LoginPage()));
   }
+
+    Future<void> writeData() async {
+      dbRef.child("DHT11/Device").set({"device": value});
+    }
 }

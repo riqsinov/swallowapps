@@ -18,17 +18,16 @@ class _HistoryPage extends State<HistoryPage> {
   int _selectedNavbar = 0;
 
   final _pageOptions = [
-    new HomePage(),
-    new DevicePage(),
-    new AddPage(),
-    new MonitorPage(),
-    new HistoryPage(),
+    HomePage(),
+    DevicePage(),
+    AddPage(),
+    MonitorPage(),
+    HistoryPage(),
   ];
 
-  void onItemTapped(int index) {
-    setState(() {
-      _selectedNavbar = index;
-    });
+  _onTap() { // this has changed
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (BuildContext context) => _pageOptions[_selectedNavbar]));
   }
 
   @override
@@ -49,15 +48,15 @@ class _HistoryPage extends State<HistoryPage> {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedNavbar,
         backgroundColor: Colors.green,
-        selectedItemColor: Colors.white,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: ImageIcon(
                 AssetImage("assets/Home.png"),
                 color: Colors.white,
               ),
-              label: "Home",
+              label: "Home"
           ),
           BottomNavigationBarItem(
               icon: ImageIcon(
@@ -88,10 +87,14 @@ class _HistoryPage extends State<HistoryPage> {
               label: "History"
           ),
         ],
-        currentIndex: _selectedNavbar,
-        onTap: onItemTapped,
-        unselectedItemColor: Colors.green,
-        showUnselectedLabels: true,
+        unselectedItemColor: Colors.white,
+        selectedItemColor: Colors.white,
+        onTap: (index) { // this has changed
+          setState(() {
+            _selectedNavbar = index;
+          });
+          _onTap();
+        },
       ),
 
 

@@ -5,6 +5,7 @@ import 'package:swallow_monitoring/devicepage.dart';
 import 'package:swallow_monitoring/historypage.dart';
 import 'package:swallow_monitoring/loginpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class MonitorPage extends StatefulWidget {
   const MonitorPage({Key? key}) : super(key: key);
@@ -15,19 +16,19 @@ class MonitorPage extends StatefulWidget {
 
 class _MonitorPage extends State<MonitorPage> {
   int _selectedNavbar = 0;
+  final dbRef = FirebaseDatabase.instance.reference().child("DHT11/Temperature");
 
   final _pageOptions = [
-    new HomePage(),
-    new DevicePage(),
-    new AddPage(),
-    new MonitorPage(),
-    new HistoryPage(),
+    HomePage(),
+    DevicePage(),
+    AddPage(),
+    MonitorPage(),
+    HistoryPage(),
   ];
 
-  void onItemTapped(int index) {
-    setState(() {
-      _selectedNavbar = index;
-    });
+  _onTap() { // this has changed
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (BuildContext context) => _pageOptions[_selectedNavbar]));
   }
 
   @override
@@ -51,8 +52,8 @@ class _MonitorPage extends State<MonitorPage> {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedNavbar,
         backgroundColor: Colors.green,
-        selectedItemColor: Colors.white,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: ImageIcon(
@@ -90,10 +91,14 @@ class _MonitorPage extends State<MonitorPage> {
               label: "History"
           ),
         ],
-        currentIndex: _selectedNavbar,
-        onTap: onItemTapped,
-        unselectedItemColor: Colors.green,
-        showUnselectedLabels: true,
+        unselectedItemColor: Colors.white,
+        selectedItemColor: Colors.white,
+        onTap: (index) {
+          setState(() {
+            _selectedNavbar = index;
+          });
+          _onTap();
+        },
       ),
 
 
@@ -121,8 +126,11 @@ class _MonitorPage extends State<MonitorPage> {
           Positioned(bottom: 35, top: 300, left: 20,
               child: Column(
               children: [
-              Text("Temperature", style: TextStyle(fontSize: 32, color: Colors.green)),
+                Text("Temperature", style: TextStyle(fontSize: 32, color: Colors.green,)),
+
+                // Text( snapshot.data.snapshot.value["Temperature"].toString() + "°C", style: TextStyle(fontSize: 32, color: Colors.green,)),
             ],
+
           ),),
 
           Positioned(bottom: 35, top: 300, right: 40,
@@ -142,4 +150,5 @@ class _MonitorPage extends State<MonitorPage> {
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => LoginPage()));
   }
+
 }

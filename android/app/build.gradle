@@ -61,6 +61,8 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation platform('com.google.firebase:firebase-bom:29.2.1')
+    implementation platform('com.google.firebase:firebase-bom:29.3.1')
     implementation 'com.android.support:multidex:2.0.1'
+    implementation 'com.google.firebase:firebase-database:16.0.4'
+    implementation("androidx.biometric:biometric:1.1.0")
 }

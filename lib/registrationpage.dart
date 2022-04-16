@@ -1,10 +1,9 @@
-import 'package:swallow_monitoring/homepage.dart';
 import 'package:swallow_monitoring/loginpage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:swallow_monitoring/db.dart';
+import 'package:swallow_monitoring/db/db.dart';
 
 
 class RegistrationPage extends StatefulWidget {
@@ -24,6 +23,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController lastnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmpassController = TextEditingController();
 
   //firebase
   final _auth = FirebaseAuth.instance;
@@ -102,7 +102,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       controller: passwordController,
       //Validator
       validator: (value) {
-        RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+        RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~_.-]).{8,}$');
         if (value!.isEmpty) {
           return ("Please Enter Your Password");
         }
@@ -114,6 +114,30 @@ class _RegistrationPageState extends State<RegistrationPage> {
       decoration: InputDecoration(
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Password",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: Colors.green),
+        ),
+      ),
+    );
+
+    //Confirm Pass
+    final _passwordField = TextFormField(
+      autofocus: false,
+      obscureText: true,
+      controller: confirmpassController,
+      //Validator
+      validator: (value) {
+        if (value!.isEmpty) {
+          return "Please Confirm the Password";
+        } else if (value != passwordController.text) {
+          return "Password must be same as above";
+        }
+      },
+      textInputAction: TextInputAction.done,
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        hintText: "Confirm Password",
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: Colors.green),
@@ -172,7 +196,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   SizedBox(height: 20),
 
                   passwordField,
-                  SizedBox(height: 75),
+                  SizedBox(height: 20),
+
+                  _passwordField,
+                  SizedBox(height: 35),
 
                   Align(
                     alignment: Alignment(0.8,0),

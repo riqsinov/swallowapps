@@ -22,31 +22,29 @@ class _AddPage extends State<AddPage> {
   int _selectedNavbar = 0;
 
   final _pageOptions = [
-    new HomePage(),
-    new DevicePage(),
-    new AddPage(),
-    new MonitorPage(),
-    new HistoryPage(),
+    HomePage(),
+    DevicePage(),
+    AddPage(),
+    MonitorPage(),
+    HistoryPage(),
   ];
 
-  void onItemTapped(int index) {
-    setState(() {
-      _selectedNavbar = index;
-    });
+  _onTap() { // this has changed
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (BuildContext context) => _pageOptions[_selectedNavbar]));
   }
 
   @override
   Widget build(BuildContext context) {
     final devicedField = TextFormField(
       autofocus: false,
-      obscureText: true,
       controller: deviceController,
       // validator: (value) {
       // },
       textInputAction: TextInputAction.done,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        hintText: "Device ID",
+        hintText: " ",
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: Colors.green),
@@ -86,8 +84,8 @@ class _AddPage extends State<AddPage> {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedNavbar,
         backgroundColor: Colors.green,
-        selectedItemColor: Colors.white,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: ImageIcon(
@@ -125,11 +123,14 @@ class _AddPage extends State<AddPage> {
               label: "History"
           ),
         ],
-        currentIndex: _selectedNavbar,
-        onTap: onItemTapped,
-
-        unselectedItemColor: Colors.green,
-        showUnselectedLabels: true,
+        unselectedItemColor: Colors.white,
+        selectedItemColor: Colors.white,
+        onTap: (index) { // this has changed
+          setState(() {
+            _selectedNavbar = index;
+          });
+          _onTap();
+        },
       ),
 
 
@@ -156,13 +157,13 @@ class _AddPage extends State<AddPage> {
               SizedBox(height: 150),
               const Align(
                 alignment: Alignment(-1,0),
-                child:  Text('Add Device', style: TextStyle(fontSize: 36, color: Colors.white, fontWeight: FontWeight.bold)),
+                child:  Text('Add Device', style: TextStyle(fontSize: 36, color: Colors.white)),
               ),
 
               SizedBox(height: 150),
               const Align(
                 alignment: Alignment(-0.95,0),
-                child:  Text('Device Serial Number', style: TextStyle(fontSize: 32, color: Colors.green, fontWeight: FontWeight.bold)),
+                child:  Text('Device Serial Number', style: TextStyle(fontSize: 24, color: Colors.green, fontWeight: FontWeight.bold)),
               ),
 
               SizedBox(height: 10),

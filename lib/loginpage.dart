@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:swallow_monitoring/homepage.dart';
 
+
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -12,6 +13,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
   //Form Key
   final _formkey = GlobalKey<FormState>();
 
@@ -68,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
       obscureText: true,
       controller: passwordController,
       validator: (value) {
-        RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+        RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~_.-]).{8,}$');
         if (value!.isEmpty) {
           return ("Please Enter Your Password");
         }
@@ -96,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
       elevation: 100,
       borderRadius: BorderRadius.circular(15),
       color: Colors.green,
-      
+
       child: MaterialButton(
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         onPressed: () {signIn(emailController.text, passwordController.text);},
@@ -136,7 +138,21 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: 20),
 
                       passwordField,
-                      SizedBox(height: 160),
+                      SizedBox(height: 10),
+
+
+                      Center(
+                        child: Container(
+                          child: IconButton(
+                            icon: Image.asset("assets/fingerprint.png"),
+                            alignment: Alignment.topRight,
+                            color: Colors.green,
+                            iconSize: 60,
+                            onPressed: () {},
+                          ),),
+                        ),
+                      SizedBox(height: 75),
+
 
                       Align(
                         alignment: Alignment(0.8,0),
