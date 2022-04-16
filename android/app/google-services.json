@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "265996112235",
+    "project_id": "swallowapps",
+    "storage_bucket": "swallowapps.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265996112235:android:085080746adfa2a7c17c2e",
+        "android_client_info": {
+          "package_name": "com.example.swallowapps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "265996112235-d6qi309199j7f5vmn1p04o957o8q0s46.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.swallowapps",
+            "certificate_hash": "a2c69a1193123e3665d24e6aaa7a0d8228572a06"
+          }
+        },
+        {
+          "client_id": "265996112235-36msgn054chsffd6l5ikhos0i1vr5nvh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxykmj8AkcnwGOGxqKjclmI9UcJniPD8Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "265996112235-36msgn054chsffd6l5ikhos0i1vr5nvh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
