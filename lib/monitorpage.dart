@@ -127,8 +127,6 @@ class _MonitorPage extends State<MonitorPage> {
               child: Column(
               children: [
                 Text("Temperature", style: TextStyle(fontSize: 32, color: Colors.green,)),
-
-                // Text( snapshot.data.snapshot.value["Temperature"].toString() + "°C", style: TextStyle(fontSize: 32, color: Colors.green,)),
             ],
 
           ),),
