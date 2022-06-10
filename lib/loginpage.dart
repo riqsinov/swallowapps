@@ -1,8 +1,10 @@
+import 'package:swallow_monitoring/homepage.dart';
+import 'package:swallow_monitoring/verification/fingerprint.dart';
 import 'package:swallow_monitoring/registrationpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:swallow_monitoring/homepage.dart';
+import 'package:swallow_monitoring/verification/verificationpage.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -37,9 +39,9 @@ class _LoginPageState extends State<LoginPage> {
       validator: (value)
       {
         if(value!.isEmpty)
-          {
-            return ("Please Enter Your Email");
-          }
+        {
+          return ("Please Enter Your Email");
+        }
         //reg expression for email validation
         if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)) {
           return ("Please Enter a valid email");
@@ -47,9 +49,9 @@ class _LoginPageState extends State<LoginPage> {
         return null;
       },
       onSaved: (value)
-        {
-          emailController.text = value!;
-        },
+      {
+        emailController.text = value!;
+      },
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
@@ -58,9 +60,6 @@ class _LoginPageState extends State<LoginPage> {
           borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: Colors.green),
         ),
-        // labelStyle: const TextStyle(
-        //   color: Colors.green
-        // ),
       ),
     );
 
@@ -83,14 +82,14 @@ class _LoginPageState extends State<LoginPage> {
         passwordController.text = value!;
       },
       textInputAction: TextInputAction.done,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          hintText: "Password",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(color: Colors.green),
-          ),
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        hintText: "Password",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: Colors.green),
         ),
+      ),
     );
 
     //Login Button
@@ -120,61 +119,69 @@ class _LoginPageState extends State<LoginPage> {
         ),
 
         child: Container(
-              child: Form(
-                key: _formkey,
-                child: SingleChildScrollView(child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget> [
+          child: Form(
+            key: _formkey,
+            child: SingleChildScrollView(child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget> [
 
-                      SizedBox(height: 330),
-                      const Align(
-                        alignment: Alignment(-0.95,0),
-                        child:  Text('Login', style: TextStyle(fontSize: 36, color: Colors.green, fontWeight: FontWeight.bold)),
-                      ),
-                      SizedBox(height: 50),
+                  SizedBox(height: 330),
+                  const Align(
+                    alignment: Alignment(-0.95,0),
+                    child:  Text('Login', style: TextStyle(fontSize: 36, color: Colors.green, fontWeight: FontWeight.bold)),
+                  ),
+                  SizedBox(height: 50),
 
-                      emailField,
-                      SizedBox(height: 20),
+                  emailField,
+                  SizedBox(height: 20),
 
-                      passwordField,
-                      SizedBox(height: 10),
-
-
-                      Center(
-                        child: Container(
-                          child: IconButton(
-                            icon: Image.asset("assets/fingerprint.png"),
-                            alignment: Alignment.topRight,
-                            color: Colors.green,
-                            iconSize: 60,
-                            onPressed: () {},
-                          ),),
-                        ),
-                      SizedBox(height: 75),
+                  passwordField,
+                  SizedBox(height: 10),
 
 
-                      Align(
-                        alignment: Alignment(0.8,0),
-                        child: loginButton,
-                      ),
+                  Center(
+                    child: Container(
+                      child: IconButton(
+                        icon: Image.asset("assets/fingerprint.png"),
+                        alignment: Alignment.topRight,
+                        color: Colors.green,
+                        iconSize: 60,
+                        onPressed: () async {
+                          bool isAuthenticated = await FingerPrint.authenticateWithFingerPrint();
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget> [
-                            Text("New Here?" , style: TextStyle(fontSize: 19, color: Colors.white)), GestureDetector(
-                              onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationPage()));
-                              },
-                              child: Text(" Register", style: TextStyle(fontSize: 19, color: Colors.white, fontWeight: FontWeight.bold)),
-                            )
-                          ]
-                      ),
+                          if (isAuthenticated) {
+                            Fluttertoast.showToast(msg: 'Authenticated successful');
+                          } else {
+                            Fluttertoast.showToast(msg: 'Authenticated Failed');
+                          }
+                        },
+                      ),),
+                  ),
+                  SizedBox(height: 75),
 
 
-                    ]
-                ),
-    ),),
+                  Align(
+                    alignment: Alignment(0.8,0),
+                    child: loginButton,
+                  ),
+
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget> [
+                        Text("New Here?" , style: TextStyle(fontSize: 19, color: Colors.white)), GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationPage()));
+                          },
+                          child: Text(" Register", style: TextStyle(fontSize: 19, color: Colors.white, fontWeight: FontWeight.bold)),
+                        )
+                      ]
+                  ),
+
+
+                ]
+            ),
+            ),),
         ),
 
       ),);
@@ -186,9 +193,9 @@ class _LoginPageState extends State<LoginPage> {
         await _auth
             .signInWithEmailAndPassword(email: email, password: password)
             .then((uid) => {
-          Fluttertoast.showToast(msg: "Login Successful"),
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => HomePage())),
+            _auth.currentUser?.sendEmailVerification(),
+            Fluttertoast.showToast(msg: "Login Successful"),
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()))
         });
       } on FirebaseAuthException catch (error) {
         switch (error.code) {
@@ -217,5 +224,9 @@ class _LoginPageState extends State<LoginPage> {
         print(error.code);
       }
     }
+    Navigator.pushAndRemoveUntil(
+        (context),
+        MaterialPageRoute(builder: (context) => VerificationPage()),
+            (route) => false);
   }
 }

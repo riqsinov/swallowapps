@@ -1,14 +1,16 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:swallow_monitoring/homepage.dart';
-import 'package:swallow_monitoring/adddevicepage.dart';
-import 'package:swallow_monitoring/monitorpage.dart';
-import 'package:swallow_monitoring/historypage.dart';
-import 'package:swallow_monitoring/loginpage.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-
-
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swallow_monitoring/adddevicepage.dart';
+import 'package:swallow_monitoring/historypage.dart';
+import 'package:swallow_monitoring/homepage.dart';
+import 'package:swallow_monitoring/loginpage.dart';
+import 'package:swallow_monitoring/monitorpage.dart';
+import 'package:swallow_monitoring/datamodel.dart';
 
 class DevicePage extends StatefulWidget {
   const DevicePage({Key? key}) : super(key: key);
@@ -40,13 +42,32 @@ class _DevicePage extends State<DevicePage> {
     HomePage(),
     DevicePage(),
     AddPage(),
-    MonitorPage(),
-    HistoryPage(),
+    ChangeNotifierProvider<DataModel>(
+        create: (_) => DataModel(0), child: MonitorPage()),
+    ChangeNotifierProvider<DataModel>(
+        create: (_) => DataModel(1), child: HistoryPage()),
   ];
 
-  _onTap() { // this has changed
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) => _pageOptions[_selectedNavbar]));
+  _onTap() {
+    // this has changed
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) => _pageOptions[_selectedNavbar]));
+  }
+
+  String deviceId = '';
+
+  void getDeviceId() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if (sharedPreferences.getString('deviceId') != '')
+      setState(() {
+        deviceId = sharedPreferences.getString('device_Id')!;
+      });
+  }
+
+  @override
+  void initState() {
+    getDeviceId();
+    super.initState();
   }
 
   @override
@@ -55,13 +76,19 @@ class _DevicePage extends State<DevicePage> {
       elevation: 200,
       borderRadius: BorderRadius.circular(15),
       color: Colors.green,
-
       child: MaterialButton(
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        onPressed: () {logout(context);},
-        child: Text("Logout", textAlign: TextAlign.center, style: TextStyle(
-          fontSize: 25, color: Colors.white,
-        ),),
+        onPressed: () {
+          logout(context);
+        },
+        child: Text(
+          "Logout",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 25,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
 
@@ -76,48 +103,42 @@ class _DevicePage extends State<DevicePage> {
                 AssetImage("assets/Home.png"),
                 color: Colors.white,
               ),
-              label: "Home"
-          ),
+              label: "Home"),
           BottomNavigationBarItem(
               icon: ImageIcon(
                 AssetImage("assets/arduino.png"),
                 color: Colors.white,
               ),
-              label: "Device"
-          ),
+              label: "Device"),
           BottomNavigationBarItem(
               icon: ImageIcon(
                 AssetImage("assets/Add.png"),
                 color: Colors.white,
               ),
-              label: "Add"
-          ),
+              label: "Add"),
           BottomNavigationBarItem(
               icon: ImageIcon(
                 AssetImage("assets/temperature.png"),
                 color: Colors.white,
               ),
-              label: "Monitor"
-          ),
+              label: "Monitor"),
           BottomNavigationBarItem(
               icon: ImageIcon(
                 AssetImage("assets/History.png"),
                 color: Colors.white,
               ),
-              label: "History"
-          ),
+              label: "History"),
         ],
         unselectedItemColor: Colors.white,
         selectedItemColor: Colors.white,
-        onTap: (index) { // this has changed
+        onTap: (index) {
+          // this has changed
           setState(() {
             _selectedNavbar = index;
           });
           _onTap();
         },
       ),
-
-
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -126,69 +147,87 @@ class _DevicePage extends State<DevicePage> {
           ),
         ),
         width: MediaQuery.of(context).size.width,
-        child: Stack(children: [
+        child: Stack(
+          children: [
+            Positioned(
+              top: 40,
+              right: 10,
+              child: logoutButton,
+            ),
 
-          Positioned(top: 40,right: 10,
-            child: logoutButton,
-          ),
+            // For Title
+            Positioned(
+              bottom: 35,
+              top: 150,
+              left: 10,
+              child: Column(
+                children: [
+                  Text("View Device",
+                      style: TextStyle(fontSize: 36, color: Colors.white)),
+                ],
+              ),
+            ),
 
-          // For Title
-          Positioned(bottom: 35, top: 150, left: 10,
-            child: Column(
-              children: [
-                Text("View Device", style: TextStyle(fontSize: 36, color: Colors.white)),
-              ],
-            ),),
+            Positioned(
+              top: 350,
+              left: 10,
+              child: Column(
+                children: [
+                  Text("Serial Device Number: " + deviceId,
+                      style: TextStyle(fontSize: 22, color: Colors.green)),
+                ],
+              ),
+            ),
 
-          Positioned( top: 350, left: 10,
-            child: Column(
-              children: [
-                Text("Serial Device Number: ", style: TextStyle(fontSize: 19, color: Colors.green)),
-              ],
-            ),),
+            Positioned(
+              top: 550,
+              left: 10,
+              child: Column(
+                children: [
+                  MaterialButton(
+                    color: Colors.blue,
+                    shape: const CircleBorder(),
+                    onPressed: () {
+                      turnOn();
+                      writeData();
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(33),
+                      child: Text(
+                        'Turn On',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
 
-          Positioned(top: 550, left: 10,
-            child: Column(
-            children: [
-              MaterialButton(
-                color: Colors.blue,
-                shape: const CircleBorder(),
-                onPressed: () {
-                  turnOn();
-                  writeData();
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(33),
-                  child: Text(
-                    'Turn On',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                ),
-              )
-            ],
-          ),),
-
-          Positioned( top: 550, right: 10,
-            child: Column(
-            children: [
-              MaterialButton(
-                color: Colors.red,
-                shape: const CircleBorder(),
-                onPressed: () {
-                  turnOff();
-                  writeData();
-                  },
-                child: const Padding(
-                  padding: EdgeInsets.all(33),
-                  child: Text(
-                    'Turn Off',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                ),
-              )
-            ],
-          ),),
-        ],),
+            Positioned(
+              top: 550,
+              right: 10,
+              child: Column(
+                children: [
+                  MaterialButton(
+                    color: Colors.red,
+                    shape: const CircleBorder(),
+                    onPressed: () {
+                      turnOff();
+                      writeData();
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(33),
+                      child: Text(
+                        'Turn Off',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -196,13 +235,11 @@ class _DevicePage extends State<DevicePage> {
   // the logout function
   Future<void> logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => LoginPage()));
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
   }
 
   Future<void> writeData() async {
     dbRef.child("DHT11/Device").set({"device": value});
   }
-
 }
-
