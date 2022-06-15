@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swallow_monitoring/adddevicepage.dart';
-import 'package:swallow_monitoring/datamodel.dart';
+import 'package:swallow_monitoring/data_model.dart';
 import 'package:swallow_monitoring/devicepage.dart';
 import 'package:swallow_monitoring/historypage.dart';
 import 'package:swallow_monitoring/homepage.dart';
@@ -40,8 +40,10 @@ class _MonitorPage extends State<MonitorPage> {
 
   final _pageOptions = [
     HomePage(),
-    DevicePage(),
-    AddPage(),
+    ChangeNotifierProvider<DataModel>(
+        create: (_) => DataModel(3), child: DevicePage()),
+    ChangeNotifierProvider<DataModel>(
+        create: (_) => DataModel(2), child: AddPage()),
     ChangeNotifierProvider<DataModel>(
         create: (_) => DataModel(0), child: MonitorPage()),
     ChangeNotifierProvider<DataModel>(
@@ -139,103 +141,101 @@ class _MonitorPage extends State<MonitorPage> {
             _onTap();
           },
         ),
-
-
         body: deviceId == model.deviceId
             ? Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/back1.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                width: MediaQuery.of(context).size.width,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 40,
+                      right: 10,
+                      child: logoutButton,
+                    ),
+
+                    // For Title
+                    Positioned(
+                      bottom: 35,
+                      top: 150,
+                      left: 10,
+                      child: Column(
+                        children: [
+                          Text("Temperature & \n Humidity",
+                              style:
+                                  TextStyle(fontSize: 36, color: Colors.white)),
+                        ],
+                      ),
+                    ),
+
+                    Positioned(
+                      bottom: 35,
+                      top: 300,
+                      left: 20,
+                      child: Column(
+                        children: [
+                          Text("Temperature",
+                              style: TextStyle(
+                                fontSize: 32,
+                                color: Colors.green,
+                              )),
+                          Text(model.lastData.first.temp + "°C",
+                              style: TextStyle(
+                                fontSize: 60,
+                                color: tempColor(
+                                    double.parse(model.lastData.first.temp)),
+                              ))
+                        ],
+                      ),
+                    ),
+
+                    Positioned(
+                      bottom: 35,
+                      top: 300,
+                      right: 40,
+                      child: Column(
+                        children: [
+                          Text("Humidity",
+                              style: TextStyle(
+                                fontSize: 32,
+                                color: Colors.green,
+                              )),
+                          Text(model.lastData.first.humidity + '%',
+                              style: TextStyle(
+                                fontSize: 60,
+                                color: humidColor(double.parse(
+                                    model.lastData.first.humidity)),
+                              ))
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage("assets/back1.png"),
               fit: BoxFit.cover,
-            ),
-          ),
+            ),),
+
+
           width: MediaQuery.of(context).size.width,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 40,
-                right: 10,
-                child: logoutButton,
-              ),
+          child: Stack(children: [
 
-              // For Title
-              Positioned(
-                bottom: 35,
-                top: 150,
-                left: 10,
-                child: Column(
-                  children: [
-                    Text("Temperature & \n Humidity",
-                        style:
-                        TextStyle(fontSize: 36, color: Colors.white)),
-                  ],
-                ),
-              ),
-
-              Positioned(
-                bottom: 35,
-                top: 300,
-                left: 20,
-                child: Column(
-                  children: [
-                    Text("Temperature",
-                        style: TextStyle(
-                          fontSize: 32,
-                          color: Colors.green,
-                        )),
-                    Text(model.lastData.first.temp + "°C",
-                        style: TextStyle(
-                          fontSize: 60,
-                          color: tempColor(
-                              double.parse(model.lastData.first.temp)),
-                        ))
-                  ],
-                ),
-              ),
-
-              Positioned(
-                bottom: 35,
-                top: 300,
-                right: 40,
-                child: Column(
-                  children: [
-                    Text("Humidity",
-                        style: TextStyle(
-                          fontSize: 32,
-                          color: Colors.green,
-                        )),
-                    Text(model.lastData.first.humidity + '%',
-                        style: TextStyle(
-                          fontSize: 60,
-                          color: humidColor(double.parse(
-                              model.lastData.first.humidity)),
-                        ))
-                  ],
-                ),
-              ),
-            ],
-          ),
-        )
-            :Container(
-              decoration: const BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("assets/back1.png"),
-              fit: BoxFit.cover,
-              ),),
-
-
-              width: MediaQuery.of(context).size.width,
-              child: Stack(children: [
-
-              // For Title
-              Positioned(bottom: 35, top: 450, right: 30, left: 30,
+            // For Title
+            Positioned(bottom: 35, top: 450, right: 30, left: 30,
               child: Column(
-              children: const [
-              Text('Please Add the Serial Number First', style: TextStyle(fontSize: 36, color: Colors.green))
-              ],
+                children: const [
+                  Text('Please Add the Serial Number First', style: TextStyle(fontSize: 36, color: Colors.green))
+                ],
               ),),
-              ],),
-              ),
+          ],),
+        ),
       );
     });
   }

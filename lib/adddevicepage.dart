@@ -7,7 +7,9 @@ import 'package:swallow_monitoring/historypage.dart';
 import 'package:swallow_monitoring/homepage.dart';
 import 'package:swallow_monitoring/loginpage.dart';
 import 'package:swallow_monitoring/monitorpage.dart';
-import 'package:swallow_monitoring/datamodel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+import 'data_model.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({Key? key}) : super(key: key);
@@ -24,8 +26,10 @@ class _AddPage extends State<AddPage> {
 
   final _pageOptions = [
     HomePage(),
-    DevicePage(),
-    AddPage(),
+    ChangeNotifierProvider<DataModel>(
+        create: (_) => DataModel(3), child: DevicePage()),
+    ChangeNotifierProvider<DataModel>(
+        create: (_) => DataModel(2), child: AddPage()),
     ChangeNotifierProvider<DataModel>(
         create: (_) => DataModel(0), child: MonitorPage()),
     ChangeNotifierProvider<DataModel>(
@@ -43,20 +47,8 @@ class _AddPage extends State<AddPage> {
     final devicedField = TextFormField(
       autofocus: false,
       controller: deviceController,
-      validator: (value) {
-        RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[0-9]).{11,}$');
-        if(value!.isEmpty)
-        {
-          return ("Please Enter The Serial Number");
-        }
-        if (!regex.hasMatch(value)) {
-          return ("Please Enter Correct Serial Number");
-        }
-      },
-      onSaved: (value)
-      {
-        deviceController.text = value!;
-      },
+      // validator: (value) {
+      // },
       textInputAction: TextInputAction.done,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
@@ -88,123 +80,132 @@ class _AddPage extends State<AddPage> {
       ),
     );
 
-    final submitButton = Material(
-      elevation: 200,
-      borderRadius: BorderRadius.circular(15),
-      color: Colors.green,
-      child: MaterialButton(
-        padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        onPressed: () async {
-          SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-          sharedPreferences.setString('device_Id', deviceController.text);
-        },
-        child: Text(
-          "Submit",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 25,
-            color: Colors.white,
-          ),
+    return Consumer<DataModel>(builder: (context, model, child) {
+      return Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: _selectedNavbar,
+          backgroundColor: Colors.green,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: ImageIcon(
+                  AssetImage("assets/Home.png"),
+                  color: Colors.white,
+                ),
+                label: "Home"),
+            BottomNavigationBarItem(
+                icon: ImageIcon(
+                  AssetImage("assets/arduino.png"),
+                  color: Colors.white,
+                ),
+                label: "Device"),
+            BottomNavigationBarItem(
+                icon: ImageIcon(
+                  AssetImage("assets/Add.png"),
+                  color: Colors.white,
+                ),
+                label: "Add"),
+            BottomNavigationBarItem(
+                icon: ImageIcon(
+                  AssetImage("assets/temperature.png"),
+                  color: Colors.white,
+                ),
+                label: "Monitor"),
+            BottomNavigationBarItem(
+                icon: ImageIcon(
+                  AssetImage("assets/History.png"),
+                  color: Colors.white,
+                ),
+                label: "History"),
+          ],
+          unselectedItemColor: Colors.white,
+          selectedItemColor: Colors.white,
+          onTap: (index) {
+            // this has changed
+            setState(() {
+              _selectedNavbar = index;
+            });
+            _onTap();
+          },
         ),
-      ),
-    );
-
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedNavbar,
-        backgroundColor: Colors.green,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: ImageIcon(
-                AssetImage("assets/Home.png"),
-                color: Colors.white,
-              ),
-              label: "Home"),
-          BottomNavigationBarItem(
-              icon: ImageIcon(
-                AssetImage("assets/arduino.png"),
-                color: Colors.white,
-              ),
-              label: "Device"),
-          BottomNavigationBarItem(
-              icon: ImageIcon(
-                AssetImage("assets/Add.png"),
-                color: Colors.white,
-              ),
-              label: "Add"),
-          BottomNavigationBarItem(
-              icon: ImageIcon(
-                AssetImage("assets/temperature.png"),
-                color: Colors.white,
-              ),
-              label: "Monitor"),
-          BottomNavigationBarItem(
-              icon: ImageIcon(
-                AssetImage("assets/History.png"),
-                color: Colors.white,
-              ),
-              label: "History"),
-        ],
-        unselectedItemColor: Colors.white,
-        selectedItemColor: Colors.white,
-        onTap: (index) {
-          // this has changed
-          setState(() {
-            _selectedNavbar = index;
-          });
-          _onTap();
-        },
-      ),
-      body: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/back1.png"),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Container(
-            child: Form(
-              key: _formkey,
-              child: SingleChildScrollView(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment(1, 10),
-                        child: logoutButton,
-                      ),
-                      SizedBox(height: 150),
-                      const Align(
-                        alignment: Alignment(-1, 0),
-                        child: Text('Add Device',
-                            style:
-                            TextStyle(fontSize: 36, color: Colors.white)),
-                      ),
-                      SizedBox(height: 150),
-                      const Align(
-                        alignment: Alignment(-0.95, 0),
-                        child: Text('Device Serial Number',
-                            style: TextStyle(
-                                fontSize: 24,
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold)),
-                      ),
-                      SizedBox(height: 10),
-                      devicedField,
-                      SizedBox(height: 20),
-                      Align(
-                        alignment: Alignment(0, 0),
-                        child: submitButton,
-                      ),
-                      SizedBox(height: 330),
-                    ]),
+        body: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/back1.png"),
+                fit: BoxFit.cover,
               ),
             ),
-          )),
-    );
+            child: Container(
+              child: Form(
+                key: _formkey,
+                child: SingleChildScrollView(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment(1, 10),
+                          child: logoutButton,
+                        ),
+                        SizedBox(height: 150),
+                        const Align(
+                          alignment: Alignment(-1, 0),
+                          child: Text('Add Device',
+                              style:
+                                  TextStyle(fontSize: 36, color: Colors.white)),
+                        ),
+                        SizedBox(height: 150),
+                        const Align(
+                          alignment: Alignment(-0.95, 0),
+                          child: Text('Device Serial Number',
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                        SizedBox(height: 10),
+                        devicedField,
+                        SizedBox(height: 20),
+                        Align(
+                          alignment: Alignment(0, 0),
+                          child: Material(
+                            elevation: 200,
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.green,
+                            child: MaterialButton(
+                              padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                              onPressed: () async {
+                                SharedPreferences sharedPreferences =
+                                    await SharedPreferences.getInstance();
+                                sharedPreferences.setString(
+                                    'device_Id', deviceController.text);
+                                if (deviceController.text == model.deviceId){
+                                  Provider.of<DataModel>(context, listen: false).addUser();
+                                  Fluttertoast.showToast(msg: 'Serial Number Added');
+                                }
+                                else if (deviceController.text != model.deviceId){
+                                  Provider.of<DataModel>(context, listen: false).addUser();
+                                  Fluttertoast.showToast(msg: 'Wrong Serial Number');
+                                }
+                              },
+                              child: Text(
+                                "Submit",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 330),
+                      ]),
+                ),
+              ),
+            )),
+      );
+    });
   }
 
   // the logout function

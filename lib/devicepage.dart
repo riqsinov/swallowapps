@@ -10,7 +10,8 @@ import 'package:swallow_monitoring/historypage.dart';
 import 'package:swallow_monitoring/homepage.dart';
 import 'package:swallow_monitoring/loginpage.dart';
 import 'package:swallow_monitoring/monitorpage.dart';
-import 'package:swallow_monitoring/datamodel.dart';
+
+import 'data_model.dart';
 
 class DevicePage extends StatefulWidget {
   const DevicePage({Key? key}) : super(key: key);
@@ -40,8 +41,10 @@ class _DevicePage extends State<DevicePage> {
 
   final _pageOptions = [
     HomePage(),
-    DevicePage(),
-    AddPage(),
+    ChangeNotifierProvider<DataModel>(
+        create: (_) => DataModel(3), child: DevicePage()),
+    ChangeNotifierProvider<DataModel>(
+        create: (_) => DataModel(2), child: AddPage()),
     ChangeNotifierProvider<DataModel>(
         create: (_) => DataModel(0), child: MonitorPage()),
     ChangeNotifierProvider<DataModel>(
@@ -92,6 +95,7 @@ class _DevicePage extends State<DevicePage> {
       ),
     );
 
+    return Consumer<DataModel>(builder: (context, DataModel model, child) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -139,7 +143,8 @@ class _DevicePage extends State<DevicePage> {
           _onTap();
         },
       ),
-      body: Container(
+      body: deviceId == model.deviceId
+          ? Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/back1.png"),
@@ -167,6 +172,7 @@ class _DevicePage extends State<DevicePage> {
                 ],
               ),
             ),
+
 
             Positioned(
               top: 350,
@@ -228,8 +234,29 @@ class _DevicePage extends State<DevicePage> {
             ),
           ],
         ),
+      )
+          : Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/back1.png"),
+            fit: BoxFit.cover,
+          ),),
+
+
+        width: MediaQuery.of(context).size.width,
+        child: Stack(children: [
+
+          // For Title
+          Positioned(bottom: 35, top: 450, right: 30, left: 30,
+            child: Column(
+              children: const [
+                Text('Please Add the Serial Number First', style: TextStyle(fontSize: 36, color: Colors.green))
+              ],
+            ),),
+        ],),
       ),
     );
+  });
   }
 
   // the logout function

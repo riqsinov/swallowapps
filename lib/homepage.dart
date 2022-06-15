@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:swallow_monitoring/adddevicepage.dart';
-import 'package:swallow_monitoring/datamodel.dart';
+import 'package:swallow_monitoring/data_model.dart';
 import 'package:swallow_monitoring/db/db.dart';
 import 'package:swallow_monitoring/devicepage.dart';
 import 'package:swallow_monitoring/historypage.dart';
@@ -27,8 +27,12 @@ class _HomePage extends State<HomePage> {
 
   final _pageOptions = [
     HomePage(),
-    DevicePage(),
-    AddPage(),
+    ChangeNotifierProvider<DataModel>(
+        create: (_) => DataModel(3), child: DevicePage()),
+    ChangeNotifierProvider<DataModel>(
+        create: (_) => DataModel(3), child: DevicePage()),
+    ChangeNotifierProvider<DataModel>(
+        create: (_) => DataModel(2), child: AddPage()),
     ChangeNotifierProvider<DataModel>(
         create: (_) => DataModel(0), child: MonitorPage()),
     ChangeNotifierProvider<DataModel>(

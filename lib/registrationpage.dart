@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:swallow_monitoring/db/db.dart';
-import 'package:swallow_monitoring/verification/verificationpage.dart';
 
 
 class RegistrationPage extends StatefulWidget {
@@ -80,7 +79,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
       autofocus: false,
       controller: emailController,
       keyboardType: TextInputType.emailAddress,
-      //Validator
+      validator: (value)
+      {
+        if(value!.isEmpty)
+        {
+          return ("Please Enter Your Email");
+        }
+        //reg expression for email validation
+        if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)) {
+          return ("Please Enter a valid email");
+        }
+        return null;
+      },
       onSaved: (value)
       {
         emailController.text = value!;
@@ -231,7 +241,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
         await _auth
             .createUserWithEmailAndPassword(email: email, password: password)
             .then((value) => {postDetailsToFirestore()
-          // , _auth.currentUser?.sendEmailVerification()
         })
             .catchError((e) {
           Fluttertoast.showToast(msg: e!.message);
@@ -282,10 +291,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         .doc(user.uid)
         .set(userData.toMap());
     Fluttertoast.showToast(msg: "Account created successfully :) ");
-
-    // Navigator.pushAndRemoveUntil(
-    //     (context),
-    //     MaterialPageRoute(builder: (context) => VerificationPage()),
-    //         (route) => false);
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
   }
 }
