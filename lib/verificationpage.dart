@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:swallow_monitoring/homepage.dart';
+import 'package:swallow_monitoring/loginpage.dart';
 
 class VerificationPage extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _VerificationStatePage extends State<VerificationPage>{
                     bool isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
                     if(isEmailVerified){
                       Fluttertoast.showToast(msg: "Email Verified");
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomePage()));
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
                     } else {
                       Fluttertoast.showToast(msg: "Email Is Not Verified");
                     }

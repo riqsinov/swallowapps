@@ -8,7 +8,6 @@ import 'package:swallow_monitoring/homepage.dart';
 import 'package:swallow_monitoring/loginpage.dart';
 import 'package:swallow_monitoring/monitorpage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'data_model.dart';
 
 class AddPage extends StatefulWidget {
@@ -147,7 +146,7 @@ class _AddPage extends State<AddPage> {
                           alignment: Alignment(1, 10),
                           child: logoutButton,
                         ),
-                        SizedBox(height: 150),
+                        SizedBox(height: 100),
                         const Align(
                           alignment: Alignment(-1, 0),
                           child: Text('Add Device',

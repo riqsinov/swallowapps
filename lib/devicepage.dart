@@ -35,7 +35,7 @@ class _DevicePage extends State<DevicePage> {
 
   final dbRef = FirebaseDatabase.instance.reference();
 
-  bool value = false;
+  bool value = true;
 
   int _selectedNavbar = 0;
 
@@ -179,14 +179,25 @@ class _DevicePage extends State<DevicePage> {
               left: 10,
               child: Column(
                 children: [
-                  Text("Serial Device Number: " + deviceId,
+                  Text("Serial Device Number: ",
                       style: TextStyle(fontSize: 22, color: Colors.green)),
                 ],
               ),
             ),
 
             Positioned(
-              top: 550,
+              top: 400,
+              left: 10,
+              child: Column(
+                children: [
+                  Text(deviceId,
+                      style: TextStyle(fontSize: 22, color: Colors.green)),
+                ],
+              ),
+            ),
+
+            Positioned(
+              top: 520,
               left: 10,
               child: Column(
                 children: [
@@ -210,7 +221,7 @@ class _DevicePage extends State<DevicePage> {
             ),
 
             Positioned(
-              top: 550,
+              top: 520,
               right: 10,
               child: Column(
                 children: [
@@ -247,7 +258,7 @@ class _DevicePage extends State<DevicePage> {
         child: Stack(children: [
 
           // For Title
-          Positioned(bottom: 35, top: 450, right: 30, left: 30,
+          Positioned(bottom: 35, top: 420, right: 30, left: 30,
             child: Column(
               children: const [
                 Text('Please Add the Serial Number First', style: TextStyle(fontSize: 36, color: Colors.green))

@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swallow_monitoring/welcomepage.dart';
 
 late AndroidNotificationChannel channel;
@@ -42,10 +41,8 @@ void main() async {
     );
   }
   String? token = await _firebaseMessaging.getToken();
-  print(token);
-  var response =
-  http.get(Uri.parse('http://10.0.2.2:5000/notif?token=$token'));
-  //print('Status code:' + response.statusCode.toString());
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  sharedPreferences.setString('fcm-token', token ?? "");
   runApp(MyApp());
 }
 

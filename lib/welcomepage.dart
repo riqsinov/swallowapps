@@ -33,24 +33,21 @@ class _WelcomePageState extends State<WelcomePage> {
       width: MediaQuery.of(context).size.width,
       child: Stack(children: [
         // For Background
-        Positioned( top: 400,  left: 198,
+        Positioned( top: 350,  left: 180,
           child: Column(
             children: [
-              Image.asset('assets/swallow.png', width: 180, height: 180,),
+              Image.asset('assets/swallow.png', width: 160, height: 160,),
 
             ],
           ),),
 
         // For Title
-        Positioned(bottom: 35, top: 450, right: 183, left: 30,
+        Positioned(bottom: 35, top: 350, right: 175, left: 20,
           child: Column(
             children: const [
-              Text('Monitoring \nSwallow \nNest', style: TextStyle(fontSize: 36, color: Colors.green))
+              Text('Monitoring \nSwallow \nNest', style: TextStyle(fontSize: 27, color: Colors.green))
             ],
           ),),
-
-
-
       ],),
 
     ),

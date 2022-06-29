@@ -157,7 +157,7 @@ class _HistoryPage extends State<HistoryPage> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 110),
+                        SizedBox(height: 40),
                         Text("History",
                             style:
                                 TextStyle(fontSize: 36, color: Colors.white)),
@@ -215,7 +215,7 @@ class _HistoryPage extends State<HistoryPage> {
           child: Stack(children: [
 
             // For Title
-            Positioned(bottom: 35, top: 450, right: 30, left: 30,
+            Positioned(bottom: 35, top: 420, right: 30, left: 30,
               child: Column(
                 children: const [
                   Text('Please Add the Serial Number First', style: TextStyle(fontSize: 36, color: Colors.green))

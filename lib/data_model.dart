@@ -33,6 +33,7 @@ class DataModel extends ChangeNotifier {
   List<Data> _lastData = [Data(temp: '0', humidity: '0')];
   String id = '';
   final db = FirebaseDatabase.instance.ref().child("DHT11/Data");
+  final dbHis = FirebaseDatabase.instance.ref().child("DHT11/History");
   late StreamSubscription _lastDataStream;
   late StreamSubscription _periodicDataStream;
 
@@ -47,14 +48,13 @@ class DataModel extends ChangeNotifier {
       _listenToLastData();
     else if (check == 1) _listenToPeriodicData();
   }
-
-  //final DataModel dataModel = DataModel();
+  
 
   void addUser() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String token = sharedPreferences.getString('token')!;
-    final dbUser = FirebaseDatabase.instance.ref().child("DHT11/users");
-    await dbUser.set({token: 'yes'});
+    String token = sharedPreferences.getString('fcm-token')!;
+    final dbUser = FirebaseDatabase.instance.ref().child("DHT11/users/$token");
+    await dbUser.set({'active': 'yes'});
     notifyListeners();
   }
 
@@ -86,7 +86,7 @@ class DataModel extends ChangeNotifier {
     DateTime start = DateTime.now().subtract(Duration(hours: 24));
     String startTime = start.toString().substring(0, 19);
     print(startTime);
-    db.orderByKey().once().then((event) {
+    dbHis.orderByKey().once().then((event) {
       //print(event.snapshot.value);
       if (event.snapshot.value != null) {
         final dataMap =

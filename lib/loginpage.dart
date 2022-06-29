@@ -1,10 +1,12 @@
-import 'package:swallow_monitoring/homepage.dart';
-import 'package:swallow_monitoring/verification/fingerprint.dart';
+
+import 'package:swallow_monitoring/fingerprint.dart';
 import 'package:swallow_monitoring/registrationpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:swallow_monitoring/verification/verificationpage.dart';
+import 'package:swallow_monitoring/verificationpage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swallow_monitoring/homepage.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -29,6 +31,8 @@ class _LoginPageState extends State<LoginPage> {
   // string for displaying the error Message
   String? errorMessage;
 
+  String value = "";
+
   @override
   Widget build(BuildContext context) {
     //Email Field
@@ -36,18 +40,6 @@ class _LoginPageState extends State<LoginPage> {
       autofocus: false,
       controller: emailController,
       keyboardType: TextInputType.emailAddress,
-      validator: (value)
-      {
-        if(value!.isEmpty)
-        {
-          return ("Please Enter Your Email");
-        }
-        //reg expression for email validation
-        if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)) {
-          return ("Please Enter a valid email");
-        }
-        return null;
-      },
       onSaved: (value)
       {
         emailController.text = value!;
@@ -68,15 +60,6 @@ class _LoginPageState extends State<LoginPage> {
       autofocus: false,
       obscureText: true,
       controller: passwordController,
-      validator: (value) {
-        RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~_.-]).{8,}$');
-        if (value!.isEmpty) {
-          return ("Please Enter Your Password");
-        }
-        if (!regex.hasMatch(value)) {
-          return ("Password Min.8 Character,lowercase & uppercase,number,symbol");
-        }
-      },
       onSaved: (value)
       {
         passwordController.text = value!;
@@ -149,9 +132,12 @@ class _LoginPageState extends State<LoginPage> {
                         iconSize: 60,
                         onPressed: () async {
                           bool isAuthenticated = await FingerPrint.authenticateWithFingerPrint();
+                          SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
                           if (isAuthenticated) {
-                            Fluttertoast.showToast(msg: 'Authenticated successful');
+                            String? email = sharedPreferences.getString("email");
+                            String? pass = sharedPreferences.getString("pass");
+                            signInWithFinger(email!, pass!);
                           } else {
                             Fluttertoast.showToast(msg: 'Authenticated Failed');
                           }
@@ -188,14 +174,20 @@ class _LoginPageState extends State<LoginPage> {
   }
   // login function
   void signIn(String email, String password) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     if (_formkey.currentState!.validate()) {
       try {
         await _auth
             .signInWithEmailAndPassword(email: email, password: password)
             .then((uid) => {
-            _auth.currentUser?.sendEmailVerification(),
+          if (uid.user!.emailVerified){
             Fluttertoast.showToast(msg: "Login Successful"),
+            sharedPreferences.setString("email", email),
+            sharedPreferences.setString("pass", password),
             Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()))
+          } else {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => VerificationPage()))
+          }
         });
       } on FirebaseAuthException catch (error) {
         switch (error.code) {
@@ -224,9 +216,25 @@ class _LoginPageState extends State<LoginPage> {
         print(error.code);
       }
     }
-    Navigator.pushAndRemoveUntil(
-        (context),
-        MaterialPageRoute(builder: (context) => VerificationPage()),
-            (route) => false);
   }
+  void signInWithFinger(String email, String password) async {
+    if (_formkey.currentState!.validate()) {
+      try {
+        await _auth
+            .signInWithEmailAndPassword(email: email, password: password)
+            .then((uid) => {
+          if (uid.user!.emailVerified){
+            Fluttertoast.showToast(msg: "Login Successful"),
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()))
+          } else {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => VerificationPage()))
+          }
+        });
+      } on FirebaseAuthException catch (error) {
+        Fluttertoast.showToast(msg: "Something Error, Please use Email To login");
+        print(error.code);
+      }
+    }
+  }
+
 }

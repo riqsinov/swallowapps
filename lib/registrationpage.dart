@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:swallow_monitoring/db/db.dart';
+import 'package:swallow_monitoring/verificationpage.dart';
 
 
 class RegistrationPage extends StatefulWidget {
@@ -240,7 +241,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
       try {
         await _auth
             .createUserWithEmailAndPassword(email: email, password: password)
-            .then((value) => {postDetailsToFirestore()
+            .then((value) => {
+          postDetailsToFirestore(),
+          _auth.currentUser?.sendEmailVerification()
         })
             .catchError((e) {
           Fluttertoast.showToast(msg: e!.message);
@@ -291,7 +294,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
         .doc(user.uid)
         .set(userData.toMap());
     Fluttertoast.showToast(msg: "Account created successfully :) ");
-    Navigator.of(context)
-        .pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+
+    Navigator.pushAndRemoveUntil(
+        (context),
+        MaterialPageRoute(builder: (context) => VerificationPage()),
+            (route) => false);
   }
 }

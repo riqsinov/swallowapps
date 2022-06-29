@@ -57,17 +57,19 @@ class _MonitorPage extends State<MonitorPage> {
   }
 
   Color tempColor(double temp) {
-    if (temp > 30) {
+    if (temp > 31) {
       return Colors.red;
-    } else if (temp < 25) {
+    } else if (temp < 26) {
       return Colors.blue;
     } else
       return Colors.green;
   }
 
   Color humidColor(double humid) {
-    if (humid < 70) {
+    if (humid < 80) {
       return Colors.red;
+    }else if (humid > 90) {
+      return Colors.blue;
     } else
       return Colors.green;
   }
@@ -161,7 +163,7 @@ class _MonitorPage extends State<MonitorPage> {
                     // For Title
                     Positioned(
                       bottom: 35,
-                      top: 150,
+                      top: 110,
                       left: 10,
                       child: Column(
                         children: [
@@ -180,12 +182,12 @@ class _MonitorPage extends State<MonitorPage> {
                         children: [
                           Text("Temperature",
                               style: TextStyle(
-                                fontSize: 32,
+                                fontSize: 20,
                                 color: Colors.green,
                               )),
                           Text(model.lastData.first.temp + "°C",
                               style: TextStyle(
-                                fontSize: 60,
+                                fontSize: 40,
                                 color: tempColor(
                                     double.parse(model.lastData.first.temp)),
                               ))
@@ -201,12 +203,12 @@ class _MonitorPage extends State<MonitorPage> {
                         children: [
                           Text("Humidity",
                               style: TextStyle(
-                                fontSize: 32,
+                                fontSize: 20,
                                 color: Colors.green,
                               )),
                           Text(model.lastData.first.humidity + '%',
                               style: TextStyle(
-                                fontSize: 60,
+                                fontSize: 40,
                                 color: humidColor(double.parse(
                                     model.lastData.first.humidity)),
                               ))
@@ -228,7 +230,7 @@ class _MonitorPage extends State<MonitorPage> {
           child: Stack(children: [
 
             // For Title
-            Positioned(bottom: 35, top: 450, right: 30, left: 30,
+            Positioned(bottom: 35, top: 420, right: 30, left: 30,
               child: Column(
                 children: const [
                   Text('Please Add the Serial Number First', style: TextStyle(fontSize: 36, color: Colors.green))
